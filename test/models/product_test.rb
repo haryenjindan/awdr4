@@ -15,6 +15,14 @@ class ProductTest < ActiveSupport::TestCase
     assert product.errors[:price].any?
   end
   
+  test "product is not valid without a unique title" do
+    product = Product.new(title: products(:ruby).title, description: "yyy",
+                          price: 1, image_url: "fred.gif")
+    assert product.invalid?
+    assert_equal([I18n.translate('errors.messages.taken')],
+                product.errors[:title])
+  end
+  
   def new_product image_url
     Product.new(title: "My Book Title", description: "yyy",
                 price: 1, image_url: image_url)
@@ -47,14 +55,6 @@ class ProductTest < ActiveSupport::TestCase
     
     product.price = 1
     assert product.valid?
-  end
-  
-  test "product is not valid without a unique title" do
-    product = Product.new(title: products(:ruby).title, description: "yyy",
-                          price: 1, image_url: "fred.gif")
-    assert product.invalid?
-    assert_equal([I18n.translate('errors.messages.taken')],
-                product.errors[:title])
   end
   
 end
